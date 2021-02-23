@@ -11,3 +11,8 @@
 - use [[https://jasom.github.io/clack-tutorial/posts/getting-started-with-clack/][clack]] for the server
 - use [[https://github.com/ruricolist/spinneret][spinneret]] for html generation
 - parenscript for JS ?
+
+** Roadmap
+*** Simple server setup, fully in CL
+*** Touch API
+*** Actually do something with it
