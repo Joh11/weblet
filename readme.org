@@ -1,0 +1,7 @@
+* Weblet, a way to turn your phone into a tablet from the web
+** Overview
+1. Start the server on the computer
+2. Connect to the IP from the phone
+3. Receive inputs on the server !
+
+** Technical informations 
