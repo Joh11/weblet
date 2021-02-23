@@ -4,5 +4,8 @@
   :license  "MIT License"
   :version "0.0.1"
   :serial t
+  :depends-on ("clack"
+	       "alexandria"
+	       "anaphora")
   :components ((:file "package")
                (:file "weblet")))

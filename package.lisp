@@ -1,4 +1,4 @@
-;;;; package.lisp
-
 (defpackage #:weblet
-  (:use #:cl))
+  (:use #:cl
+	#:anaphora
+	#:alexandria))
