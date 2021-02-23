@@ -1,4 +1,5 @@
 (defpackage #:weblet
   (:use #:cl
 	#:anaphora
-	#:alexandria))
+	#:alexandria
+	#:spinneret))

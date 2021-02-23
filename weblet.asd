@@ -6,6 +6,7 @@
   :serial t
   :depends-on ("clack"
 	       "alexandria"
-	       "anaphora")
+	       "anaphora"
+	       "spinneret")
   :components ((:file "package")
                (:file "weblet")))
