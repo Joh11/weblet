@@ -14,17 +14,6 @@
 
 ;; Server starting / closing stuff
 
-(defun handler (env)
-  (destructuring-bind (&key request-method &allow-other-keys)
-      env
-    (case request-method
-      (:get (http-ok () (main-page)))
-      (:post (progn
-	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
-	       (print json)
-	       (finish-output)
-	       (http-ok () "{}"))))))
-
 (defparameter *clack-server* nil)
 
 (defun stop-server ()
@@ -59,32 +48,56 @@
       (:body ,@body))))
 
 (defmacro with-script (&rest body)
-  `(with-html (:script (parenscript:ps ,@body))))
+  `(with-html (:script (:raw (parenscript:ps ,@body)))))
 
 ;; Main page of the web app
+
+(defun handler (env)
+  (destructuring-bind (&key request-method &allow-other-keys)
+      env
+    (case request-method
+      (:get (http-ok () (main-page)))
+      (:post (progn
+	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
+	       (format t "~a~%" json)
+	       (finish-output)
+	       (http-ok () "{}"))))))
 
 (defun main-page ()
   (with-page (:head ((:style (alexandria:read-file-into-string "style.css"))))
     (with-script
-	(defun send-object (obj)
-	  (chain (fetch ""
-			(create :method "POST"
-				:body 
-				(chain *json* (stringify (create
-							  :buttons (@ obj buttons)
-							  :type (@ obj type)
-							  :x (@ obj x)
-							  :y (@ obj y)
-							  :movement-x (@ obj movement-x)
-							  :movement-y (@ obj movement-y))))))
-		 (then (lambda (response) (chain response (json))))
-		 (then (lambda (data)))))
+	(defun process-touches (touches)
+	  (unless touches
+	    (return-from process-touches "failed"))
+	  (loop for i from 0 below (@ touches length)
+		collect
+		(create
+		 :i i
+		 :x (chain touches (item i) client-x)
+		 :y (chain touches (item i) client-y)
+		 :identifier (chain touches (item i) identifier))))
+      
+      (defun send-object (obj)
+	(chain console (log obj))
+	(chain obj (prevent-default))
+	
+	(chain (fetch ""
+		      (create :method "POST"
+			      :body 
+			      (chain *json* (stringify (create
+							:type (@ obj type)
+							:touches (process-touches (@ obj changed-touches))
+							)))))
+	       (then (lambda (response) (chain response (json))))
+	       (then (lambda (data)))))
       
       (defun startup ()
 	(let ((el (chain document (get-element-by-id "canvas"))))
-	  (setf (@ el onpointerdown) send-object)
-	  (setf (@ el onpointerup) send-object)
-	  (setf (@ el onpointermove) send-object)))
+	  
+	  (chain el (add-event-listener "touchstart" send-object false))
+	  (chain el (add-event-listener "touchend" send-object false))
+	  (chain el (add-event-listener "touchcancel" send-object false))
+	  (chain el (add-event-listener "touchmove" send-object false))))
 
       (defun fullscreen-canvas ()
 	(let ((el (chain document (get-element-by-id "canvas"))))
@@ -93,7 +106,7 @@
       
       (chain console (log "bojour"))
       (chain document (add-event-listener "DOMContentLoaded" startup)))
-    
+
     (:canvas :id "canvas"
 	     :width 600
 	     :height 300
@@ -101,6 +114,6 @@
 	     "Your browser does not support canvas element")
     (:button :type "button"
 	     :onclick (ps (fullscreen-canvas))
-     "Full screen")))
+	     "Full screen")))
 
 
