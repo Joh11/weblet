@@ -60,6 +60,8 @@
       (:post (progn
 	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
 	       (format t "~a~%" json)
+	       (awhen json ;; make sure it was correct first
+		 (viz-handle-event it))
 	       (finish-output)
 	       (http-ok () "{}"))))))
 
@@ -72,7 +74,6 @@
 	  (loop for i from 0 below (@ touches length)
 		collect
 		(create
-		 :i i
 		 :x (chain touches (item i) client-x)
 		 :y (chain touches (item i) client-y)
 		 :identifier (chain touches (item i) identifier))))
@@ -116,4 +117,60 @@
 	     :onclick (ps (fullscreen-canvas))
 	     "Full screen")))
 
+;; Visualization tool
 
+(defun cdr-assoc (item alist)
+  (cdr (assoc item alist)))
+
+(defun to-keyword (x)
+  (intern (string-upcase (string x))
+	  :keyword))
+
+(defparameter *pointers* (make-hash-table))
+
+(defun viz-clear-pointers ()
+  (setf *pointers* (make-hash-table)))
+
+(defun viz-update-pointers (touches)
+  (dolist (touch touches)
+    (setf (gethash (cdr-assoc :identifier touch)
+		   *pointers*)
+	  `(,(cdr-assoc :x touch)
+	    ,(cdr-assoc :y touch)))))
+
+(defun viz-draw-pointers (render)
+  (sdl2:set-render-draw-color render 255 0 0 255)
+  (maphash (lambda (k v)
+	     (declare (ignore k))
+	     (destructuring-bind (x y) v
+	       (sdl2:with-rects ((rect x y 10 10))
+		 (sdl2:render-fill-rect render rect))))
+	   *pointers*))
+
+(defun viz-handle-event (event)
+  (case (to-keyword (cdr-assoc :type event))
+    (:touchstart
+     ;; Clear the previous things
+     (viz-clear-pointers)
+     (viz-update-pointers (cdr-assoc :touches event)))
+    (:touchmove
+     ;; Update the pointers
+     (viz-update-pointers (cdr-assoc :touches event)))
+    (:touchend
+     (viz-clear-pointers))))
+
+(defun viz ()
+  (sdl2:with-init (:everything)
+    (sdl2:with-window (win :title "Weblet")
+      (sdl2:with-renderer (render win)
+	(sdl2:with-event-loop (:method :poll)
+	  (:quit () t)
+	  (:idle ()
+		 (sdl2:set-render-draw-color render 255 255 255 255)
+		 (sdl2:render-clear render)
+
+		 ;; Draw the pointers
+		 (viz-draw-pointers render)
+		 
+		 (sdl2:render-present render)
+		 (swank.live:update-swank)))))))
