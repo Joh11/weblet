@@ -10,6 +10,11 @@
 	       :spinneret
 	       :parenscript
 	       :cl-ppcre
-	       :cl-json)
+	       :cl-json
+	       ;; for viz
+	       :sdl2
+	       :swank.live)
   :components ((:file "package")
+	       (:file "utils")
+	       (:file "viz")
                (:file "weblet")))
