@@ -139,9 +139,14 @@
 	    ,(cdr-assoc :y touch)))))
 
 (defun viz-draw-pointers (render)
-  (sdl2:set-render-draw-color render 255 0 0 255)
   (maphash (lambda (k v)
-	     (declare (ignore k))
+	     (case (rem k 6)
+	       (0 (sdl2:set-render-draw-color render 255 0 0 255))
+	       (1 (sdl2:set-render-draw-color render 0 255 0 255))
+	       (2 (sdl2:set-render-draw-color render 0 0 255 255))
+	       (3 (sdl2:set-render-draw-color render 255 255 0 255))
+	       (4 (sdl2:set-render-draw-color render 0 255 255 255))
+	       (5 (sdl2:set-render-draw-color render 255 0 255 255)))
 	     (destructuring-bind (x y) v
 	       (sdl2:with-rects ((rect x y 10 10))
 		 (sdl2:render-fill-rect render rect))))
