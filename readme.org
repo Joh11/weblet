@@ -36,3 +36,17 @@ This is the code from xdo to move the mouse:
 	return _is_success("XWarpPointer", ret == 0, xdo);
     }
   #+end_src
+
+To clean:
+- relative movements
+- screen take the current screen number ?
+
+Even simpler:
+  #+begin_src c
+    int xdo_move_mouse_relative(const xdo_t *xdo, int x, int y)  {
+	int ret = 0;
+	ret = XTestFakeRelativeMotionEvent(xdo->xdpy, x, y, CurrentTime);
+	XFlush(xdo->xdpy);
+	return _is_success("XTestFakeRelativeMotionEvent", ret == 0, xdo);
+    }
+  #+end_src

@@ -14,13 +14,13 @@
 #include <X11/Xlib.h> // Every Xlib program must include this
 #include <assert.h>   // I include this to test return values the lazy way
 #include <unistd.h>   // So we got the profile for 10 seconds
+#include <X11/extensions/XTest.h>
 #include <stdio.h>
 
 #define NIL (0)       // A name for the void pointer
 
 int main()
 {
-    const int screen = 0;
     const int x = 200;
     const int y = 100;
 
@@ -35,11 +35,10 @@ int main()
 
     // Moving the mouse
     
-    Window screen_root = RootWindow(dpy, screen);
-    ret = XWarpPointer(dpy, None, screen_root, 0, 0, 0, 0, x, y);
+    ret = XTestFakeRelativeMotionEvent(dpy, x, y, CurrentTime);
     XFlush(dpy);
 
-    if(ret != 0)
+    if(ret == 0)
 	printf("Failed !\n");
 
     return 0;

@@ -17,4 +17,5 @@
   :components ((:file "package")
 	       (:file "utils")
 	       (:file "viz")
+	       (:file "xmove")
                (:file "weblet")))
