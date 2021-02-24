@@ -14,7 +14,10 @@
 
 ** Roadmap
 *** Make the whole screen as the touchscreen
+**** Use the fullscreen API
 *** Actually do something with it
+**** xorg interop
+**** visualization using sdl ?
 *** Preview on the client ?
 *** Websockets or similar ?
 *** More security ?
