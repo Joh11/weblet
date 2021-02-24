@@ -54,5 +54,4 @@
 		 ;; Draw the pointers
 		 (viz-draw-pointers render)
 		 
-		 (sdl2:render-present render)
-		 (swank.live:update-swank)))))))
+		 (sdl2:render-present render)))))))

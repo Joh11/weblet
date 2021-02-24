@@ -11,6 +11,8 @@
 (use-foreign-library :libx11)
 (use-foreign-library :libxtst)
 
+(defcfun ("XInitThreads" init-threads) :int)
+
 (defcfun ("XOpenDisplay" open-display) :pointer
   (display-name :pointer))
 
@@ -28,6 +30,7 @@
 
 (defun xmove-open-display ()
   (unless *xmove-display*
+    (weblet/cffi:init-threads)
     (setf *xmove-display* (weblet/cffi:open-display (cffi:null-pointer))))
   *xmove-display*)
 

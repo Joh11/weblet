@@ -19,8 +19,7 @@
 	       :cl-ppcre
 	       :cl-json
 	       ;; for viz
-	       :sdl2
-	       :swank.live)
+	       :sdl2)
   :components ((:file "package")
 	       (:file "utils")
 	       (:file "viz")

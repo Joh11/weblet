@@ -9,6 +9,7 @@
   (:use #:cl
 	#:anaphora
 	#:cffi)
-  (:export #:open-display
+  (:export #:init-threads
+	   #:open-display
 	   #:test-fake-relative-motion-event
 	   #:flush))
