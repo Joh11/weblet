@@ -13,40 +13,6 @@
 - parenscript for JS
 
 ** Roadmap
-*** Actually do something with it
-**** xorg interop
-*** Preview on the client ?
-*** Websockets or similar ?
+*** Add buttons
+*** Change sensitivity
 *** More security ?
-
-* The xorg mess
-This is the code from xdo to move the mouse:   
-  #+begin_src c
-    int xdo_move_mouse(const xdo_t *xdo, int x, int y, int screen)  {
-	int ret = 0;
-
-	/* There is a bug (feature?) in XTestFakeMotionEvent that causes
-	 ,* the screen number in the request to be ignored. The internets
-	 ,* seem to recommend XWarpPointer instead, ie;
-	 ,* https://bugzilla.redhat.com/show_bug.cgi?id=518803
-	 ,*/
-	Window screen_root = RootWindow(xdo->xdpy, screen);
-	ret = XWarpPointer(xdo->xdpy, None, screen_root, 0, 0, 0, 0, x, y);
-	XFlush(xdo->xdpy);
-	return _is_success("XWarpPointer", ret == 0, xdo);
-    }
-  #+end_src
-
-To clean:
-- relative movements
-- screen take the current screen number ?
-
-Even simpler:
-  #+begin_src c
-    int xdo_move_mouse_relative(const xdo_t *xdo, int x, int y)  {
-	int ret = 0;
-	ret = XTestFakeRelativeMotionEvent(xdo->xdpy, x, y, CurrentTime);
-	XFlush(xdo->xdpy);
-	return _is_success("XTestFakeRelativeMotionEvent", ret == 0, xdo);
-    }
-  #+end_src
