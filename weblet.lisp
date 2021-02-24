@@ -85,11 +85,22 @@
 	  (setf (@ el onpointerdown) send-object)
 	  (setf (@ el onpointerup) send-object)
 	  (setf (@ el onpointermove) send-object)))
+
+      (defun fullscreen-canvas ()
+	(let ((el (chain document (get-element-by-id "canvas"))))
+	  (when (@ el request-fullscreen)
+	    (chain el (request-fullscreen)))))
       
       (chain console (log "bojour"))
       (chain document (add-event-listener "DOMContentLoaded" startup)))
     
     (:canvas :id "canvas"
-	     "Your browser does not support canvas element")))
+	     :width 600
+	     :height 300
+	     :style "border: solid black 1px;"
+	     "Your browser does not support canvas element")
+    (:button :type "button"
+	     :onclick (ps (fullscreen-canvas))
+     "Full screen")))
 
 
