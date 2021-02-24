@@ -64,7 +64,7 @@
 ;; Main page of the web app
 
 (defun main-page ()
-  (with-page ()
+  (with-page (:head ((:style (alexandria:read-file-into-string "style.css"))))
     (with-script
 	(defun send-object (obj)
 	  (chain (fetch ""
@@ -89,11 +89,7 @@
       (chain console (log "bojour"))
       (chain document (add-event-listener "DOMContentLoaded" startup)))
     
-    (:h1 "Weblet 0.0.1")
     (:canvas :id "canvas"
-	     :width "600"
-	     :height "600"
-	     :style "border:solid black 1px;"
 	     "Your browser does not support canvas element")))
 
 
