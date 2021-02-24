@@ -4,9 +4,12 @@
   :license  "MIT License"
   :version "0.0.1"
   :serial t
-  :depends-on ("clack"
-	       "alexandria"
-	       "anaphora"
-	       "spinneret")
+  :depends-on (:clack
+	       :alexandria
+	       :anaphora
+	       :spinneret
+	       :parenscript
+	       :cl-ppcre
+	       :cl-json)
   :components ((:file "package")
                (:file "weblet")))
