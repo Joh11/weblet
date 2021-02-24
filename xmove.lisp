@@ -24,11 +24,39 @@
 
 (in-package #:weblet)
 
-(defmacro xmove-with-open-display (display &body body)
-  `(let ((,display (weblet/cffi:open-display (cffi:null-pointer))))
-     ,@body))
+(defparameter *xmove-display* nil)
 
-(defun xmove-mouse-relative (display x y)
+(defun xmove-open-display ()
+  (unless *xmove-display*
+    (setf *xmove-display* (weblet/cffi:open-display (cffi:null-pointer))))
+  *xmove-display*)
+
+(defun xmove-mouse-relative (x y)
   ;; Because the CurrentTime is = 0L in <X11/X.h>
-  (weblet/cffi:test-fake-relative-motion-event display x y 0)
-  (weblet/cffi:flush display))
+  (weblet/cffi:test-fake-relative-motion-event *xmove-display* x y 0)
+  (weblet/cffi:flush *xmove-display*))
+
+;; Position from the last event
+(defparameter *xmove-pos* '(0 0))
+
+(defun xmove-set-pos (touch)
+  (setf *xmove-pos*
+	(list (cdr-assoc :x touch)
+	      (cdr-assoc :y touch))))
+
+(defun xmove-move (touch)
+  "Compute the offset, move the mouse and update the stored position"
+  (let ((offset-x (- (cdr-assoc :x touch)
+		     (first *xmove-pos*)))
+	(offset-y (- (cdr-assoc :y touch)
+		     (second *xmove-pos*))))
+    (xmove-mouse-relative offset-x offset-y)
+    (xmove-set-pos touch)))
+
+(defun xmove-handle-event (event)
+  (case (to-keyword (cdr-assoc :type event))
+    (:touchstart
+     ;; Update the last event position
+     (xmove-set-pos (first (cdr-assoc :touches event))))
+    (:touchmove
+     (xmove-move (first (cdr-assoc :touches event))))))

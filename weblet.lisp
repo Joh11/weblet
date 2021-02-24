@@ -52,6 +52,7 @@
 
 ;; Main page of the web app
 
+(defparameter json nil)
 (defun handler (env)
   (destructuring-bind (&key request-method &allow-other-keys)
       env
@@ -61,6 +62,7 @@
 	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
 	       (format t "~a~%" json)
 	       (awhen json ;; make sure it was correct first
+		 (xmove-handle-event it)
 		 (viz-handle-event it))
 	       (finish-output)
 	       (http-ok () "{}"))))))
@@ -117,3 +119,15 @@
 	     :onclick (ps (fullscreen-canvas))
 	     "Full screen")))
 
+
+;; Entry point of the program
+
+(defun main ()
+  ;; Load xlib stuff
+  (xmove-open-display)
+
+  ;; Server stuff
+  (start-server)
+
+  (format t "Press ENTER to quit...")
+  (read-line))

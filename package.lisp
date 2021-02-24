@@ -2,7 +2,8 @@
   (:use #:cl
 	#:anaphora
 	#:spinneret
-	#:parenscript))
+	#:parenscript)
+  (:export #:main))
 
 (defpackage #:weblet/cffi
   (:use #:cl

@@ -3,6 +3,13 @@
   :author "Johan Felisaz <johan.felisaz@protonmail.com>"
   :license  "MIT License"
   :version "0.0.1"
+
+  ;; Build options
+  :build-operation "asdf:program-op"
+  :build-pathname "weblet"
+  :entry-point "weblet:main"
+
+  
   :serial t
   :depends-on (:clack
 	       :alexandria
