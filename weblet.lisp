@@ -12,16 +12,42 @@
     (with-output-to-string (s)
       (sb-ext:run-program "/bin/hostname" (list "-I") :output s)))))
 
-(defparameter *clack-server*
-  (clack:clackup (lambda (env) (handler env))
-		 :address (get-ip-address)
-		 :port 8000))
+;; Server starting / closing stuff
+
+(defun handler (env)
+  (destructuring-bind (&key request-method &allow-other-keys)
+      env
+    (case request-method
+      (:get (http-ok () (main-page)))
+      (:post (progn
+	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
+	       (print json)
+	       (finish-output)
+	       (http-ok () "{}"))))))
+
+(defparameter *clack-server* nil)
 
 (defun stop-server ()
-  (clack:stop *clack-server*))
+  (prog1 (clack:stop *clack-server*)
+    (setf *clack-server* nil)))
+
+(defun start-server ()
+  (when *clack-server*
+    (restart-case (error "Server is already running")
+      (restart-server ()
+	:report "Restart the server"
+	(stop-server))))
+  (setf *clack-server*
+	(clack:clackup (lambda (env) (handler env))
+		       :address (get-ip-address)
+		       :port 8000)))
+
+;; Request stuff
 
 (defun http-ok (headers &rest body)
   `(200 ,headers (,@body)))
+
+;; HTML / JS stuff
 
 (defmacro with-page ((&key head) &body body)
   `(with-html-string
@@ -34,6 +60,8 @@
 
 (defmacro with-script (&rest body)
   `(with-html (:script (parenscript:ps ,@body))))
+
+;; Main page of the web app
 
 (defun main-page ()
   (with-page ()
@@ -68,13 +96,4 @@
 	     :style "border:solid black 1px;"
 	     "Your browser does not support canvas element")))
 
-(defun handler (env)
-  (destructuring-bind (&key request-method &allow-other-keys)
-      env
-    (case request-method
-      (:get (http-ok () (main-page)))
-      (:post (progn
-	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
-	       (print json)
-	       (finish-output)
-	       (http-ok () "{}"))))))
+
