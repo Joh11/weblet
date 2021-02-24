@@ -1,9 +1,5 @@
 (in-package #:weblet)
 
-(defun drop-multiple-values (v)
-  "I know this is dumb, but it works"
-  v)
-
 (defun get-ip-address ()
   "Returns the (LAN) IP address of the computer"
   (drop-multiple-values
@@ -52,19 +48,16 @@
 
 ;; Main page of the web app
 
-(defparameter json nil)
 (defun handler (env)
   (destructuring-bind (&key request-method &allow-other-keys)
       env
     (case request-method
       (:get (http-ok () (main-page)))
       (:post (progn
-	       (setf json (ignore-errors (cl-json:decode-json (getf env :raw-body))))
-	       (format t "~a~%" json)
-	       (awhen json ;; make sure it was correct first
-		 (xmove-handle-event it)
-		 (viz-handle-event it))
-	       (finish-output)
+	       (alexandria:when-let
+		   (event (ignore-errors (cl-json:decode-json (getf env :raw-body))))
+		 ;; (viz-handle-event event)
+		 (xmove-handle-event event))
 	       (http-ok () "{}"))))))
 
 (defun main-page ()
@@ -81,7 +74,6 @@
 		 :identifier (chain touches (item i) identifier))))
       
       (defun send-object (obj)
-	(chain console (log obj))
 	(chain obj (prevent-default))
 	
 	(chain (fetch ""
@@ -107,7 +99,6 @@
 	  (when (@ el request-fullscreen)
 	    (chain el (request-fullscreen)))))
       
-      (chain console (log "bojour"))
       (chain document (add-event-listener "DOMContentLoaded" startup)))
 
     (:canvas :id "canvas"
@@ -129,5 +120,7 @@
   ;; Server stuff
   (start-server)
 
-  (format t "Press ENTER to quit...")
-  (read-line))
+  (format t "Press ENTER to quit...~%")
+  (read-line)
+
+  (stop-server))

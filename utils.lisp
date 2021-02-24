@@ -1,5 +1,9 @@
 (in-package #:weblet)
 
+(defun drop-multiple-values (v)
+  "I know this is dumb, but it works"
+  v)
+
 (defun cdr-assoc (item alist)
   (cdr (assoc item alist)))
 
