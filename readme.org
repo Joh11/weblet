@@ -6,13 +6,15 @@
 
 ** Technical informations
 *** Client
-- use [[https://developer.mozilla.org/en-US/docs/Web/API/Touch_events][the Touch API]]
+- use the pointer API
 *** Server
 - use [[https://jasom.github.io/clack-tutorial/posts/getting-started-with-clack/][clack]] for the server
 - use [[https://github.com/ruricolist/spinneret][spinneret]] for html generation
-- parenscript for JS ?
+- parenscript for JS
 
 ** Roadmap
-*** Simple server setup, fully in CL
-*** Touch API
+*** Make the whole screen as the touchscreen
 *** Actually do something with it
+*** Preview on the client ?
+*** Websockets or similar ?
+*** More security ?
