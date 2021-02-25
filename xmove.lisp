@@ -21,6 +21,12 @@
   (x :int) (y :int)
   (delay :unsigned-long))
 
+(defcfun ("XTestFakeButtonEvent" test-fake-button-event) :int
+  (display :pointer)
+  (button :unsigned-int)
+  (is-press :int) ;; Bool in reality
+  (delay :unsigned-long))
+
 (defcfun ("XFlush" flush) :int
   (display :pointer))
 
@@ -48,11 +54,15 @@
     (setf *xmove-display* (weblet/cffi:open-display (cffi:null-pointer))))
   *xmove-display*)
 
+(defun xmove-mouse-click ()
+  (weblet/cffi:test-fake-button-event *xmove-display* 1 1 0)
+  (weblet/cffi:test-fake-button-event *xmove-display* 1 0 0)
+  (weblet/cffi:flush *xmove-display*))
+
 (defun xmove-mouse-relative (x y)
   ;; Because the CurrentTime is = 0L in <X11/X.h>
   (weblet/cffi:test-fake-relative-motion-event *xmove-display* x y 0)
   (weblet/cffi:flush *xmove-display*))
-
 
 (defun xmove-set-pos (touch)
   (setf *xmove-pos*
@@ -79,5 +89,4 @@
     (:touchend
      (when (xmove-click-durationp)
        ;; Send a click !
-       (print "CLICK")
-       (finish-output)))))
+       (xmove-mouse-click)))))
