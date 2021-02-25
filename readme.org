@@ -13,6 +13,5 @@
 - parenscript for JS
 
 ** Roadmap
-*** Add buttons
 *** Change sensitivity
 *** More security ?
