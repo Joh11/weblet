@@ -28,6 +28,20 @@
 
 (defparameter *xmove-display* nil)
 
+;; Position from the last event
+(defparameter *xmove-pos* '(0 0))
+(defparameter *xmove-start-time* nil)
+
+(defparameter *xmove-click-max-duration* 200) ;; Half a second should be enough
+
+(defun xmove-reset-start-time ()
+  (setf *xmove-start-time* (get-internal-real-time)))
+
+(defun xmove-click-durationp ()
+  "Returns T if the duration of the touch is small enough to be considered a click"
+  (< (- (get-internal-real-time) *xmove-start-time*)
+     *xmove-click-max-duration*))
+
 (defun xmove-open-display ()
   (unless *xmove-display*
     (weblet/cffi:init-threads)
@@ -39,8 +53,6 @@
   (weblet/cffi:test-fake-relative-motion-event *xmove-display* x y 0)
   (weblet/cffi:flush *xmove-display*))
 
-;; Position from the last event
-(defparameter *xmove-pos* '(0 0))
 
 (defun xmove-set-pos (touch)
   (setf *xmove-pos*
@@ -60,6 +72,12 @@
   (case (to-keyword (cdr-assoc :type event))
     (:touchstart
      ;; Update the last event position
-     (xmove-set-pos (first (cdr-assoc :touches event))))
+     (xmove-set-pos (first (cdr-assoc :touches event)))
+     (xmove-reset-start-time))
     (:touchmove
-     (xmove-move (first (cdr-assoc :touches event))))))
+     (xmove-move (first (cdr-assoc :touches event))))
+    (:touchend
+     (when (xmove-click-durationp)
+       ;; Send a click !
+       (print "CLICK")
+       (finish-output)))))
