@@ -4,6 +4,20 @@
 2. Connect to the IP from the phone
 3. Receive inputs on the server !
 
+** Installation
+*** Requirements
+This programs uses Xlib calls to move the mouse. Thus Xorg is needed.
+
+To build the executable, a Common Lisp developpement environment is
+needed (usually the SBCL compiler and Quicklisp).
+
+*** Instructions
+#+begin_src bash
+  git clone https://github.com/Joh11/weblet.git
+  cd weblet
+  make
+#+end_src
+
 ** Technical informations
 *** Client
 - using the pointer API
@@ -11,3 +25,4 @@
 - using [[https://jasom.github.io/clack-tutorial/posts/getting-started-with-clack/][clack]] for the server
 - using [[https://github.com/ruricolist/spinneret][spinneret]] for html generation
 - using parenscript for JS generation
+
