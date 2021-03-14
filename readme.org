@@ -18,6 +18,12 @@ needed (usually the SBCL compiler and Quicklisp).
   make
 #+end_src
 
+** Limitations
+- Only works if the phone and the computer are on the same local
+  network.
+- Zero security, the requests are HTTP, and any device within the same
+  LAN could control your mouse
+   
 ** Technical informations
 *** Client
 - using the pointer API
