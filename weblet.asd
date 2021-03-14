@@ -9,19 +9,21 @@
   :build-pathname "weblet"
   :entry-point "weblet:main"
 
-  
   :serial t
-  :depends-on (:clack
-	       :alexandria
-	       :anaphora
-	       :spinneret
-	       :parenscript
-	       :cl-ppcre
-	       :cl-json
+  :depends-on (clack
+	       alexandria
+	       anaphora
+	       spinneret
+	       parenscript
+	       cl-ppcre
+	       cl-json
 	       ;; for viz
-	       :sdl2)
-  :components ((:file "package")
-	       (:file "utils")
-	       (:file "viz")
-	       (:file "xmove")
-               (:file "weblet")))
+	       sdl2)
+  
+  :components ((:module "src"
+		:serial t
+		:components ((:file "package")
+			     (:file "utils")
+			     (:file "viz")
+			     (:file "xmove")
+			     (:file "weblet")))))
