@@ -61,7 +61,7 @@
 	       (http-ok () "{}"))))))
 
 (defun main-page ()
-  (with-page (:head ((:style (alexandria:read-file-into-string "style.css"))))
+  (with-page ()
     (with-script
 	(defun process-touches (touches)
 	  (unless touches
